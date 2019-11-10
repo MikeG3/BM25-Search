@@ -138,12 +138,11 @@ public class driver {
 		 */
 
 		//VERIFY ARTICLES = REUTERS OBJECTS
-		System.out.println("\nThere are " + (reutersArticles.size()-1)+" reuter objects");
-		System.out.println("\nThere are "+ (rae.getNewID().size()-1) +" newid's and "+ (rae.getOldID().size()-1) + " oldid's");
+		System.out.println("\nTHERE ARE " + (reutersArticles.size()-1)+" REUTER ARTICLES");
 		//TOKEN COUNTER
 		for (int i = 0 ; i < reutersArticles.size() ; i++)
 			tokenCount += reutersArticles.get(i).countTokens();
-		System.out.println("\nThere are " + tokenCount + " tokens in the entire corpus\n");
+		System.out.println("\nTHERE ARE " + tokenCount + " TOKENS IN THE CORPUS\n");
 
 		//COMPRESS ARTILCE TOKENS USING LOSSY COMPRESSION
 		System.out.println("\nCOMPRESSING TOKENS USING LOSSY COMPRESSION");
@@ -152,15 +151,17 @@ public class driver {
 		tokenCount = 0;
 		for (int i = 0 ; i < reutersArticles.size() ; i++)
 			tokenCount += reutersArticles.get(i).countTokens();
-		System.out.println("\nThe corpus has been compressed to " + tokenCount + "\n");	 
+		System.out.println("\nTHE CORPUS GAS BEEN COMPRESSED TO " + tokenCount);	 
 		
 		//GET DOCUMENT LENGTHS AND AVERAGE DOCUMENT LENGTH
 		for (int i = 0 ; i < reutersArticles.size() ; i++ ) 
 			avdl += reutersArticles.get(i).countTokens();
 		avdl /=  reutersArticles.size();
+		
+		System.out.println("\nTHE AVERAGE DOCUMENT LENGTH IS " + avdl);
 
 		//CONSTRUCT INDEX
-		bm25Indexer.constructPartialIndex(reutersArticles, dictionary);
+		bm25Indexer.constructPartialIndex(reutersArticles, dictionary, avdl);
 		//bm25Indexer.constructIndex(reutersArticles, dictionary);
 		
 		//Calculate BM25 RANKS

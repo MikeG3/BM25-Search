@@ -22,7 +22,6 @@ case folding 	391,523 -17 -19 	96,969,056 -3 -12 			179,158,204 -0 -9
 stemming 		322,383 -17 -33 	63,812,300 -4 -42 			94,516,599 -0 -52
 
  */
-import java.util.ArrayList;
 
 public class CompressorLossy {
 

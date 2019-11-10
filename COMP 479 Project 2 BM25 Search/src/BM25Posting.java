@@ -64,22 +64,23 @@ public class BM25Posting {
 	}//close function inc freq
 
 	//CALCULATE RANK VALUES
-	public void calculateBM25(int avdl){
+	public void calculateBM25(double avdl, int numOfDocs){
+		this.numOfDocs = numOfDocs;
 		calculateIDF();
 		//BM25 =  IDF * TF * (K + 1) /(K * (1 - B + B*DL/AVDL) +  TF) 
 		bm25Rank = idf * frequency * (K+1.0) / (K* (1-B+(B*(double) docLength/(double) avdl)) + frequency);
 	}//close function calculate idf
-
 	public void calculateIDF(){
 		//IDF = LOG( N / DF )
 		idf = Math.log( ( (double) numOfDocs / (double) frequency) ) ;
 	}//close function calculate idf
-
+	
 	//STTERS AND GETTERS
 	public int getFrequency(){ return this.frequency; }
 	public int getDocID(){ return this.docID; }
+	public double getRank(){ return this.bm25Rank; }
 
 	//DISPLAY
-	public String toString(){	return ( docID + " <" + tag + "> " + " (" + frequency + ")" ); }//close function to string
+	public String toString(){	return ( docID + " <" + tag + "> " + " (" + frequency + ")" + " Rank: " + bm25Rank); }//close function to string
 
 }//CLOSE CLASS BM25 Posting

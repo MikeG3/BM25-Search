@@ -18,7 +18,8 @@ public class BM25Dictionary {
 
 	//ATTRIBUTES
 	private ArrayList<BM25Token> terms = new ArrayList<BM25Token>();
-	private int avdl;
+	private double avdl;
+	private int numOfDocs;
 	
 	//CONSTRUCTORS
 	public BM25Dictionary(){}		
@@ -73,8 +74,17 @@ public class BM25Dictionary {
 					terms.add( token.get(i) );
 			}//close for i each token
 		}//close else dictionary not empty
+		//SORT POSTINGS
+		sortPostings();
 	}//close function sort
-
+	//SORT POSTINGS
+	public void sortPostings(){
+		System.out.println("\nSORTING POSTINGS\n");
+		for (int i = 0 ; i < terms.size(); i++ ){
+			terms.get(i).sortPostings();
+		}//close for i each term
+	}//close function sort postings
+	
 	//SEARCH AND ADD
 	public void searchAndAdd(String term, int docID, String tag, int docLength){
 		//search through all tokens in the dictionary
@@ -102,8 +112,9 @@ public class BM25Dictionary {
 	public void calculateBM25(){
 		System.out.println("\nRANKING THE DICTIONARY ENTRIES USING BM25");
 		for (int i = 0 ; i < terms.size() ; i++ ){
-			terms.get(i).calculateBM25(this.avdl);
+			terms.get(i).calculateBM25(this.avdl, numOfDocs);
 		}//close for i
+		this.sortPostings();
 	}//close function calculate bm25
 	
 	//SETTERS AND GETTERS
@@ -111,7 +122,8 @@ public class BM25Dictionary {
 	public BM25Token getToken(int token){ return terms.get(token); }
 	public ArrayList<BM25Token> getTerms() { return terms; }
 	public int getSize(){ return terms.size(); }
-	public void setAVDL(int avdl){ this.avdl = avdl; }
+	public void setAVDL(double avdl){ this.avdl = avdl; }
+	public void setNumOfDocs(int in){ this.numOfDocs = in; }
 	
 	//DISPLAY
  	public void print(){
