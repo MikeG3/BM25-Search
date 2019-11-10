@@ -47,7 +47,7 @@ public class BM25Token {
 		posting.add(post);
 	}//close function add Posting
 	
-	public void calculateBM25(int dl, int avdl){
+	public void calculateBM25(int avdl){
 		for (int i = 0 ; i < posting.size() ; i++ ){
 			posting.get(i).calculateBM25(avdl);
 		}//close for i

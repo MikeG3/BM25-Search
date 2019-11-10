@@ -163,6 +163,9 @@ public class driver {
 		bm25Indexer.constructPartialIndex(reutersArticles, dictionary);
 		//bm25Indexer.constructIndex(reutersArticles, dictionary);
 		
+		//Calculate BM25 RANKS
+		dictionary.calculateBM25();
+		
 		//WRITE DICTIONARY TO DISK (Disk.txt)
 		diskWriter.write( dictionary );
 		

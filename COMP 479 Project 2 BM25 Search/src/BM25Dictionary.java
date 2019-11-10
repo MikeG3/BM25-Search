@@ -99,9 +99,10 @@ public class BM25Dictionary {
 	}//close function search and add
 
 	//RANK POSTINGS
-	public void calculateBM25(int dl){
+	public void calculateBM25(){
+		System.out.println("\nRANKING THE DICTIONARY ENTRIES USING BM25");
 		for (int i = 0 ; i < terms.size() ; i++ ){
-			terms.get(i).calculateBM25(dl, this.avdl);
+			terms.get(i).calculateBM25(this.avdl);
 		}//close for i
 	}//close function calculate bm25
 	
