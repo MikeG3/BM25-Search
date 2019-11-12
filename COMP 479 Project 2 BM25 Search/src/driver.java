@@ -22,7 +22,7 @@
  	IDF = LOG( N / DF )	
 
  	0 < B < 1	TUNING PARAMETER
- 	K1 > 0, ?TERM FREQUENCY?
+ 	K > 0, ?TERM FREQUENCY?
 
  	BM25 =  IDF * TF * (K + 1) /(K * (1 - B + B*DL/AVDL) +  TF) 
 
@@ -46,9 +46,7 @@
  * 
  */
 
-import java.io.File;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 
 public class driver {
@@ -68,6 +66,7 @@ public class driver {
 		BM25Indexer bm25Indexer = new BM25Indexer();
 		float avdl = 0;
 		WordQuery query = new WordQuery();
+		QueryWords words = new QueryWords();
 		
 		//WELCOME MESSAGE
 		System.out.println("COMP 479 PROJECT 2 BM25 RANKED RETRIEVAL\nMICHAEL GARNER 26338739\n");			
@@ -151,18 +150,18 @@ public class driver {
 		tokenCount = 0;
 		for (int i = 0 ; i < reutersArticles.size() ; i++)
 			tokenCount += reutersArticles.get(i).countTokens();
-		System.out.println("\nTHE CORPUS GAS BEEN COMPRESSED TO " + tokenCount);	 
+		System.out.println("\nTHE CORPUS HAS BEEN COMPRESSED TO " + tokenCount);	 
 		
 		//GET DOCUMENT LENGTHS AND AVERAGE DOCUMENT LENGTH
 		for (int i = 0 ; i < reutersArticles.size() ; i++ ) 
 			avdl += reutersArticles.get(i).countTokens();
 		avdl /=  reutersArticles.size();
 		
-		System.out.println("\nTHE AVERAGE DOCUMENT LENGTH IS " + avdl);
+		System.out.println("\nTHE AVERAGE DOCUMENT LENGTH IS " + avdl + "\n");
 
 		//CONSTRUCT INDEX
-		bm25Indexer.constructPartialIndex(reutersArticles, dictionary, avdl);
-		//bm25Indexer.constructIndex(reutersArticles, dictionary);
+		//bm25Indexer.constructPartialIndex(reutersArticles, dictionary, avdl);
+		bm25Indexer.constructIndex(reutersArticles, dictionary, avdl);
 		
 		//Calculate BM25 RANKS
 		dictionary.calculateBM25();
@@ -170,51 +169,9 @@ public class driver {
 		//WRITE DICTIONARY TO DISK (Disk.txt)
 		diskWriter.write( dictionary );
 		
-//		//QUERY  AND RESULTS
-//		String[] queries = {"HELLO", "WORLD", "COCOA", "CANADA", "ARDVARK", "INFORMATION", "RETRIEVAL"};
-//		String[] q1 = {"HELLO", "WORLD"};
-//		String[] q2 = {"INFORMATION", "RETRIEVAL"};
-//		String[] q3 = {"CANADA", "ARDVARK"};
-//		String[] q4 = {"Jimmy", "Carter"};
-//		String[] q5 = {"Green", "Party"};
-//		String[] q6 = {"Innovations",  "in", "telecommunication"};
-//		String[] q7 = {"environmentalist", "ecologist"};
-//		//ASSIGNED QUERIES
-//		//COMPRESS ASSIGNED QUERIES
-//		q4[0] = "jimmy";
-//		q4[1] = "carter";
-//		q5[0] = "green";
-//		q5[1] = "party";
-//		q6[2] = new String();
-//		q6[0] = "innovations";
-//		q6[1] = "telecommunication";
-//		for (int i = 0 ; i < queries.length ; i++ ){
-//			queries[i] = queries[i].toLowerCase();
-//			if ( i < 2 ){
-//				q1[i] = q1[i].toLowerCase();
-//				q2[i] = q2[i].toLowerCase();
-//				q3[i] = q3[i].toLowerCase();
-//			}//close if i is less than 2
-//			//query.printSearchID( queries[i], dictionary );
-//		}//close for i
-//		System.out.println("\nQUERYING WORDS FROM THE DICTIONARY\n");
-//		//SINGLE TERMS
-//		for (int i = 0 ; i < queries.length ; i++ )
-//			query.printSearchID( queries[i], dictionary );
-//		//AND TERMS
-//		query.printAndSearchID( q1, dictionary );
-//		query.printAndSearchID( q2, dictionary );
-//		query.printAndSearchID( q3, dictionary );
-//		//OR TERMS
-//		query.printOrSearchID( q1, dictionary );
-//		query.printOrSearchID( q2, dictionary );
-//		query.printOrSearchID( q3, dictionary );
-//		//ASSIGNED QUERIES
-//		query.printAndSearchID( q4, dictionary );
-//		query.printAndSearchID( q5, dictionary );
-//		query.printAndSearchID( q6, dictionary );
-//		query.printOrSearchID( q7, dictionary );
-//
+		//QUERY  AND RESULTS
+		for (int i = 0 ; i < words.getWords().size() ; i++)
+			query.printOrSearchID(words.getWords(i), dictionary);
 
 		//CLOSING MESSAGE
 		System.out.println("\n\nALGORITHM IS COMPLETE! :)");

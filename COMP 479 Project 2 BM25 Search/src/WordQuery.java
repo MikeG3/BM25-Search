@@ -19,7 +19,28 @@
 import java.util.ArrayList;
 
 public class WordQuery {
-
+	/*
+	//BM25
+	public ArrayList<BM25Token> bm25Search(String[] input, BM25Dictionary dic){
+		ArrayList<BM25Token> out = new ArrayList<BM25Token>();
+		ArrayList<BM25Token> sorted = new ArrayList<BM25Token>();
+		out = orSearch(input, dic);
+		//RANK ALL OF THE HITS BY SUMMING THEIR RANKS
+		if (out.size() > 1){
+			int[] score = new int[out.size()];
+			//FOR EACH MATCH, MAKE A SCORE OF 0 FOR IT
+			for (int i = 0 ; i < score.length ; i++ ){
+				score[i] = 0;
+				//FOR EACH QUERY WORD, IF FOUND, ADD THE BM25RANK TO THE SCORE
+				for (int j = 0 ; j < input.length ; j++){
+					if ( search(input[j]))
+				}//close for j
+			}//close for i
+		}//close if there is more than 1 match
+		//LOOP FOR SORTING BY HIGHEST TO LOWEST
+		return sorted;
+	}//close function bm25 search
+	 */
 	//SERVICE METHODS	
 	//SEARCH AND RETURN NEWID (DOC ID)
 	//SEARCH AND RETURN TOKENS
@@ -27,70 +48,23 @@ public class WordQuery {
 	//SEARCH AND GIVE ARTICLE
 
 	//SINGLE TERM
-	public ArrayList<SPIMIToken> search(String query, SPIMIDictionary dictionary){
-		ArrayList<SPIMIToken> tokens = new ArrayList<SPIMIToken>();
-		for (int i = 0 ; i < dictionary.getSize() ; i++ )
-			if ( dictionary.getToken(i).getTerm().equals(query))
-				tokens.add(dictionary.getToken(i));
-		return tokens;
-	}//close function search
-	public ArrayList<Integer> searchDocID(String query, SPIMIDictionary dictionary){
-		ArrayList<Integer> id = new ArrayList<Integer>();
-		for (int i = 0 ; i < dictionary.getSize() ; i++ )
-			if ( dictionary.getToken(i).getTerm().equals(query))
-				for (int j = 0 ; j < dictionary.getToken(i).getDocID().size() ; j++)
-					id.add(dictionary.getToken(i).getDocID().get(j));
-		return id;
-	}//close function search
-	public ArrayList<SPIMIToken> search(String query, SPIMIDictionary[] dictionary){
-		ArrayList<SPIMIToken> tokens = new ArrayList<SPIMIToken>();
-		ArrayList<SPIMIToken> tempTokens = new ArrayList<SPIMIToken>();
-		for (int i = 0 ; i < dictionary.length ; i++){
-			tempTokens = search(query, dictionary[i]);
-			if (tempTokens.size() > 0)
-				for (int j = 0 ;  j < tempTokens.size() ; j++ )
-					tokens.add(tempTokens.get(j));
-		}//close for i	
-		return tokens;
-	}//close function search
-	public ArrayList<SPIMIToken> search(String query, ArrayList<SPIMIDictionary> dictionary){
-		ArrayList<SPIMIToken> tokens = new ArrayList<SPIMIToken>();
-		ArrayList<SPIMIToken> tempTokens = new ArrayList<SPIMIToken>();
-		for (int i = 0 ; i < dictionary.size() ; i++){
-			tempTokens = search(query, dictionary.get(i));
-			if (tempTokens.size() > 0)
-				for (int j = 0 ;  j < tempTokens.size() ; j++ )
-					tokens.add(tempTokens.get(j));
-		}//close for i	
-		return tokens;
-	}//close function search
-	public ArrayList<Integer> searchDocID(String query, SPIMIDictionary[] dictionary){
-		ArrayList<Integer> id = new ArrayList<Integer>();
-		ArrayList<Integer> idtemp = new ArrayList<Integer>();
-		for (int i = 0 ; i < dictionary.length ; i++ ){
-			idtemp = searchDocID(query, dictionary[i]);
-			if (idtemp.size() > 0)
-				for (int j = 0 ; j < idtemp.size() ; j++)
-					id.add(idtemp.get(j));
-		}//close for i
-		return id;
-	}//close function search
-	public ArrayList<Integer> searchDocID(String query, ArrayList<SPIMIDictionary> dictionary){
-		ArrayList<Integer> id = new ArrayList<Integer>();
-		ArrayList<Integer> idtemp = new ArrayList<Integer>();
-		for (int i = 0 ; i < dictionary.size() ; i++ ){
-			idtemp = searchDocID(query, dictionary.get(i));
-			if (idtemp.size() > 0)
-				for (int j = 0 ; j < idtemp.size() ; j++)
-					id.add(idtemp.get(j));
-		}//close for i
-		return id;
-	}//close function search
-
+	public boolean search(String query, BM25Dictionary dic){
+		for (int i = 0 ; i < dic.getSize() ; i++ )
+			if ( dic.getToken(i).getTerm().equals(query))
+				return true;
+		return false;
+	}//close search function
+	public boolean searchContains(String query, BM25Dictionary dic){
+		for (int i = 0 ; i < dic.getSize() ; i++ )
+			if ( dic.getToken(i).getTerm().contains(query))
+				return true;
+		return false;
+	}//close search function
+	
 	//AND SEARCH
-	public ArrayList<SPIMIToken> andSearch(String[] query, SPIMIDictionary dictionary){
+	public ArrayList<BM25Token> andSearch(String[] query, BM25Dictionary dictionary){
 		boolean match;
-		ArrayList<SPIMIToken> tokens = new ArrayList<SPIMIToken>();
+		ArrayList<BM25Token> tokens = new ArrayList<BM25Token>();
 		for (int i = 0 ; i < dictionary.getSize() ; i++ ){
 			match = true;
 			for ( int j = 0 ; j <  query.length ; j++ )
@@ -101,27 +75,21 @@ public class WordQuery {
 		}//close for j
 		return tokens;
 	}//close function search
-	public ArrayList<SPIMIToken> andSearch(String[] query, SPIMIDictionary[] dictionary){
-		ArrayList<SPIMIToken> tokens = new ArrayList<SPIMIToken>();
-		ArrayList<SPIMIToken> tokensTemp = new ArrayList<SPIMIToken>();
-		for (int i = 0 ; i < dictionary.length ; i++ ){
-			tokensTemp = andSearch(query, dictionary[i]);
-			for ( int j = 0 ; j < tokensTemp.size() ; j++ )
-				tokens.add(tokensTemp.get(j));
-		}//close for i
-		return tokens;
+	public ArrayList<BM25Posting> andSearchPostings(String[] query, BM25Dictionary dictionary){
+		boolean match;
+		ArrayList<BM25Posting> ints = new ArrayList<BM25Posting>();
+		for (int i = 0 ; i < dictionary.getSize() ; i++ ){
+			match = true;
+			for ( int j = 0 ; j <  query.length ; j++ )
+				if ( !dictionary.getToken(i).getTerm().equals(query[j]))
+					match = false;
+			if (match)
+				for ( int j = 0 ; j <  dictionary.getToken(i).getPostings().size() ; j++ )
+					ints.add( dictionary.getToken(i).getPostings().get(j) );
+		}//close for j
+		return ints;
 	}//close function search
-	public ArrayList<SPIMIToken> andSearch(String[] query, ArrayList<SPIMIDictionary> dictionary){
-		ArrayList<SPIMIToken> tokens = new ArrayList<SPIMIToken>();
-		ArrayList<SPIMIToken> tokensTemp = new ArrayList<SPIMIToken>();
-		for (int i = 0 ; i < dictionary.size() ; i++ ){
-			tokensTemp = andSearch(query, dictionary.get(i));
-			for ( int j = 0 ; j < tokensTemp.size() ; j++ )
-				tokens.add(tokensTemp.get(j));
-		}//close for i
-		return tokens;
-	}//close function search
-	public ArrayList<Integer> andSearchDocID(String[] query, SPIMIDictionary dictionary){
+	public ArrayList<Integer> andSearchDocID(String[] query, BM25Dictionary dictionary){
 		boolean match;
 		ArrayList<Integer> ints = new ArrayList<Integer>();
 		for (int i = 0 ; i < dictionary.getSize() ; i++ ){
@@ -130,68 +98,68 @@ public class WordQuery {
 				if ( !dictionary.getToken(i).getTerm().equals(query[j]))
 					match = false;
 			if (match)
-				for ( int j = 0 ; j <  dictionary.getToken(i).getDocID().size() ; j++ )
-					ints.add( dictionary.getToken(i).getDocID().get(j) );
-		}//close for j
-		return ints;
-	}//close function search
-	public ArrayList<Integer> andSearchDocID(String[] query, SPIMIDictionary[] dictionary){
-		ArrayList<Integer> ints = new ArrayList<Integer>();
-		ArrayList<Integer> intsTemp = new ArrayList<Integer>();
-		for (int i = 0 ; i < dictionary.length ; i++ ){
-			intsTemp = andSearchDocID(query, dictionary[i]);
-			for ( int j = 0 ; j <  intsTemp.size() ; j++ )
-				ints.add(intsTemp.get(j));
-		}//close for j
-		return ints;
-	}//close function search
-	public ArrayList<Integer> andSearchDocID(String[] query, ArrayList<SPIMIDictionary> dictionary){
-		ArrayList<Integer> ints = new ArrayList<Integer>();
-		ArrayList<Integer> intsTemp = new ArrayList<Integer>();
-		for (int i = 0 ; i < dictionary.size() ; i++ ){
-			intsTemp = andSearchDocID(query, dictionary.get(i));
-			for ( int j = 0 ; j <  intsTemp.size() ; j++ )
-				ints.add(intsTemp.get(j));
+				for ( int j = 0 ; j <  dictionary.getToken(i).getPostings().size() ; j++ )
+					ints.add( dictionary.getToken(i).getPostings().get(j).getDocID() );
 		}//close for j
 		return ints;
 	}//close function search
 	
+
 	//OR SEARCH
-	public ArrayList<SPIMIToken> orSearch(String[] query, SPIMIDictionary dictionary){
-		boolean match;
-		ArrayList<SPIMIToken> tokens = new ArrayList<SPIMIToken>();
+	//SEARCH FOR EXACT MATCH FOR ANY QUERY WORD IN THE DICTIONARY
+	public ArrayList<BM25Token> orSearch(String[] query, BM25Dictionary dictionary){
+		boolean duplicate;
+		//SEARCH FOR EXACT MATCH FOR EACH QUERY WORD IN THE DICTIONARY
+		ArrayList<BM25Token> out = new ArrayList<BM25Token>();
 		for (int i = 0 ; i < dictionary.getSize() ; i++ )
-			for (int  j= 0 ; j < dictionary.getSize() ; j++ ){
-				match = false;
-				for ( int k = 0 ; k <  query.length ; k++ )
-					if ( dictionary.getToken(j).getTerm().equals(query[k]))
-						match = true;
-				if (match)
-					tokens.add(dictionary.getToken(j));
-			}//close for j
-		return tokens;
+			for (int j = 0 ; j < query.length ; j++ )
+				if (dictionary.getToken(i).getTerm().equals(query[j])){
+					duplicate = false;
+					//ENSURE NOT A DUPLICATE
+					for (int k = 0 ; k < out.size() ; k++)
+						if (dictionary.getToken(i).equals( dictionary.getToken(k) ) )
+							duplicate = true;
+					if (!duplicate)
+						out.add(dictionary.getToken(i));
+				}//close if matched query word
+		return out;
 	}//close function search
-	public ArrayList<SPIMIToken> orSearch(String[] query, SPIMIDictionary[] dictionary){
-		ArrayList<SPIMIToken> tokens = new ArrayList<SPIMIToken>();
-		ArrayList<SPIMIToken> tokensTemp = new ArrayList<SPIMIToken>();
-		for (int i = 0 ; i < dictionary.length ; i++ ){
-			tokensTemp = orSearch(query, dictionary[i]);
-			for ( int j = 0 ; j < tokensTemp.size() ; j++ )
-				tokens.add(tokensTemp.get(j));
-		}//close for i
-		return tokens;
+	//SEARCH FOR MATCH that CONTAINS ANY QUERY WORD IN THE DICTIONARY
+	public ArrayList<BM25Token> orSearchContains(String[] query, BM25Dictionary dictionary){
+		boolean duplicate;
+		//SEARCH FOR EXACT MATCH FOR EACH QUERY WORD IN THE DICTIONARY
+		ArrayList<BM25Token> out = new ArrayList<BM25Token>();
+		for (int i = 0 ; i < dictionary.getSize() ; i++ )
+			for (int j = 0 ; j < query.length ; j++ )
+				if (dictionary.getToken(i).getTerm().contains(query[j])){
+					duplicate = false;
+					//ENSURE NOT A DUPLICATE
+					for (int k = 0 ; k < out.size() ; k++)
+						if (dictionary.getToken(i).equals( dictionary.getToken(k) ) )
+							duplicate = true;
+					if (!duplicate)
+						out.add(dictionary.getToken(i));
+				}//close if matched query word
+		return out;
 	}//close function search
-	public ArrayList<SPIMIToken> orSearch(String[] query, ArrayList<SPIMIDictionary> dictionary){
-		ArrayList<SPIMIToken> tokens = new ArrayList<SPIMIToken>();
-		ArrayList<SPIMIToken> tokensTemp = new ArrayList<SPIMIToken>();
-		for (int i = 0 ; i < dictionary.size() ; i++ ){
-			tokensTemp = orSearch(query, dictionary.get(i));
-			for ( int j = 0 ; j < tokensTemp.size() ; j++ )
-				tokens.add(tokensTemp.get(j));
-		}//close for i
-		return tokens;
+	
+	
+	//OR SEARCH
+	public ArrayList<BM25Posting> orSearchDocIDPostings(String[] query, BM25Dictionary dictionary){
+		boolean match;
+		ArrayList<BM25Posting> ints = new ArrayList<BM25Posting>();
+		for (int i = 0 ; i < dictionary.getSize() ; i++ ){
+			match = false;
+			for ( int j = 0 ; j <  query.length ; j++ )
+				if ( dictionary.getToken(i).getTerm().equals(query[j]))
+					match = true;
+			if (match)
+				for ( int j = 0 ; j <  dictionary.getToken(i).getPostings().size() ; j++ )
+					ints.add( dictionary.getToken(i).getPostings().get(j) );
+		}//close for j
+		return ints;
 	}//close function search
-	public ArrayList<Integer> orSearchDocID(String[] query, SPIMIDictionary dictionary){
+	public ArrayList<Integer> orSearchDocID(String[] query, BM25Dictionary dictionary){
 		boolean match;
 		ArrayList<Integer> ints = new ArrayList<Integer>();
 		for (int i = 0 ; i < dictionary.getSize() ; i++ ){
@@ -200,85 +168,21 @@ public class WordQuery {
 				if ( dictionary.getToken(i).getTerm().equals(query[j]))
 					match = true;
 			if (match)
-				for ( int j = 0 ; j <  dictionary.getToken(i).getDocID().size() ; j++ )
-					ints.add( dictionary.getToken(i).getDocID().get(j) );
+				//add all docId's
+				for ( int j = 0 ; j < dictionary.getToken(i).getPostings().size() ; j++ )
+					ints.add( dictionary.getToken(i).getPostings().get(j).getDocID() );
 		}//close for j
-		return ints;
-	}//close function search
-	public ArrayList<Integer> orSearchDocID(String[] query, SPIMIDictionary[] dictionary){
-		ArrayList<Integer> ints = new ArrayList<Integer>();
-		ArrayList<Integer> intsTemp = new ArrayList<Integer>();
-		for (int i = 0 ; i < dictionary.length ; i++ ){
-			intsTemp = orSearchDocID(query, dictionary[i]);
-			for ( int j = 0 ; j <  intsTemp.size() ; j++ )
-				ints.add(intsTemp.get(j));
-		}//close for j
-		return ints;
-	}//close function search
-	public ArrayList<Integer> orSearchDocID(String[] query, ArrayList<SPIMIDictionary> dictionary){
-		ArrayList<Integer> ints = new ArrayList<Integer>();
-		ArrayList<Integer> intsTemp = new ArrayList<Integer>();
-		for (int i = 0 ; i < dictionary.size() ; i++ ){
-			intsTemp = orSearchDocID(query, dictionary.get(i));
-			for ( int j = 0 ; j <  intsTemp.size() ; j++ )
-				ints.add(intsTemp.get(j));
-		}//close for j
+		//remove duplicates
+		for (int i = 0 ; i < ints.size() ; i++)
+			for (int j = (i+1) ; j < ints.size(); j++)
+				if (ints.get(i) == ints.get(j))
+					ints.remove(j);
 		return ints;
 	}//close function search
 
+
 	//PRINT DOCUMENT ID
-	//SINGLE SEARCH
-	public void printSearchID(String query, SPIMIDictionary[] dictionary){
-		ArrayList<Integer> ids = searchDocID(query, dictionary);
-		System.out.print("\nDISPLAYING RESULTS FROM QUERY FOR: \"" + query + "\" " + "\n" + ids.size() + "\t");
-		if ( ids.size() < 1 )
-			System.out.println( "KEYWORD NOT FOUND\n" );
-		else {
-			System.out.println( "MATCHES AT THE FOLLOWING DOCUMENTS:\n");
-			for (int i = 0 ; i < ids.size(); i++ )
-				System.out.print("Document ID " + ids.get(i) + "\n");
-		}//close else
-	}//close function search and print
-	public void printSearchID(String query, ArrayList<SPIMIDictionary> dictionary){
-		ArrayList<Integer> ids = searchDocID(query, dictionary);
-		System.out.print("\nDISPLAYING RESULTS FROM QUERY FOR: \"" + query + "\" " + "\n" + ids.size() + "\t");
-		if ( ids.size() < 1 )
-			System.out.println( "KEYWORD NOT FOUND\n" );
-		else {
-			System.out.println( "MATCHES AT THE FOLLOWING DOCUMENTS:\n");
-			for (int i = 0 ; i < ids.size(); i++ )
-				System.out.print("Document ID " + ids.get(i) + "\n");
-		}//close else
-	}//close function search and print
-	public void printSearchID(String query, SPIMIDictionary dictionary){
-		ArrayList<Integer> ids = searchDocID(query, dictionary);
-		System.out.print("\nDISPLAYING RESULTS FROM QUERY FOR: \"" + query + "\" " + "\n" + ids.size() + "\t");
-		if ( ids.size() < 1 )
-			System.out.println( "KEYWORD NOT FOUND\n" );
-		else {
-			System.out.println( "MATCHES AT THE FOLLOWING DOCUMENTS:\n");
-			for (int i = 0 ; i < ids.size(); i++ )
-				System.out.print("Document ID " + ids.get(i) + "\n");
-		}//close else
-	}//close function search and print
-	//AND SEARCH
-	public void printAndSearchID(String[] query, SPIMIDictionary[] dictionary){
-		ArrayList<Integer> ids = andSearchDocID(query, dictionary);
-		System.out.print("\nDISPLAYING RESULTS FROM QUERY FOR: \n");
-		for (int i = 0 ; i < query.length ; i++){
-			System.out.print("\"" + query[i] + "\" ");
-			if ( i < query.length-1 )
-				System.out.print("AND ");
-		}//close for i
-		if ( ids.size() < 1 )
-			System.out.println( "\nKEYWORDS NOT FOUND\n" );
-		else {
-			System.out.println( "\n" + ids.size() + " MATCHES AT THE FOLLOWING DOCUMENTS:\n");
-			for (int i = 0 ; i < ids.size(); i++ )
-				System.out.print("Document ID " + ids.get(i) + "\n");
-		}//close else
-	}//close function search and print
-	public void printAndSearchID(String[] query, ArrayList<SPIMIDictionary> dictionary){
+	public void printAndSearchID(String[] query, BM25Dictionary dictionary){
 		ArrayList<Integer> ids = andSearchDocID(query, dictionary);
 		System.out.print("\nDISPLAYING RESULTS FROM QUERY FOR: \n");
 		for (int i = 0 ; i < query.length ; i++){
@@ -294,30 +198,13 @@ public class WordQuery {
 				System.out.print("Document ID " + ids.get(i) + "\n");
 		}//close else
 	}//close function search and print
-	public void printAndSearchID(String[] query, SPIMIDictionary dictionary){
-		ArrayList<Integer> ids = andSearchDocID(query, dictionary);
-		System.out.print("\nDISPLAYING RESULTS FROM QUERY FOR: \n");
-		for (int i = 0 ; i < query.length ; i++){
-			System.out.print("\"" + query[i] + "\" ");
-			if ( i < query.length-1 )
-				System.out.print("AND ");
-		}//close for i
-		if ( ids.size() < 1 )
-			System.out.println( "\nKEYWORDS NOT FOUND\n" );
-		else {
-			System.out.println( "\n" + ids.size() +  " MATCHES AT THE FOLLOWING DOCUMENTS:\n");
-			for (int i = 0 ; i < ids.size(); i++ )
-				System.out.print("Document ID " + ids.get(i) + "\n");
-		}//close else
-	}//close function search and print
-	//OR SEARCH
-	public void printOrSearchID(String[] query, SPIMIDictionary[] dictionary){
+	public void printOrSearchID(String[] query, BM25Dictionary dictionary){
 		ArrayList<Integer> ids = orSearchDocID(query, dictionary);
-		System.out.print("\nDISPLAYING RESULTS FROM QUERY FOR: \n");
+		System.out.print("\nDISPLAYING RESULTS FROM QUERY FOR RANKED BY BM25 VALUE: \n");
 		for (int i = 0 ; i < query.length ; i++){
 			System.out.print("\"" + query[i] + "\" ");
 			if ( i < query.length-1 )
-				System.out.print("OR ");
+				System.out.print(", ");
 		}//close for i
 		if ( ids.size() < 1 )
 			System.out.println( "\nKEYWORDS NOT FOUND\n" );
@@ -327,38 +214,6 @@ public class WordQuery {
 				System.out.print("Document ID " + ids.get(i) + "\n");
 		}//close else
 	}//close function search and print
-	public void printOrSearchID(String[] query, ArrayList<SPIMIDictionary> dictionary){
-		ArrayList<Integer> ids = orSearchDocID(query, dictionary);
-		System.out.print("\nDISPLAYING RESULTS FROM QUERY FOR: \n");
-		for (int i = 0 ; i < query.length ; i++){
-			System.out.print("\"" + query[i] + "\" ");
-			if ( i < query.length-1 )
-				System.out.print("OR ");
-		}//close for i
-		if ( ids.size() < 1 )
-			System.out.println( "\nKEYWORDS NOT FOUND\n" );
-		else {
-			System.out.println( "\n" + ids.size() +  " MATCHES AT THE FOLLOWING DOCUMENTS:\n");
-			for (int i = 0 ; i < ids.size(); i++ )
-				System.out.print("Document ID " + ids.get(i) + "\n");
-		}//close else
-	}//close function search and print
-	public void printOrSearchID(String[] query, SPIMIDictionary dictionary){
-		ArrayList<Integer> ids = orSearchDocID(query, dictionary);
-		System.out.print("\nDISPLAYING RESULTS FROM QUERY FOR: \n");
-		for (int i = 0 ; i < query.length ; i++){
-			System.out.print("\"" + query[i] + "\" ");
-			if ( i < query.length-1 )
-				System.out.print("OR ");
-		}//close for i
-		if ( ids.size() < 1 )
-			System.out.println( "\nKEYWORDS NOT FOUND\n" );
-		else {
-			System.out.println( "\n" + ids.size() +  " MATCHES AT THE FOLLOWING DOCUMENTS:\n");
-			for (int i = 0 ; i < ids.size(); i++ )
-				System.out.print("Document ID " + ids.get(i) + "\n");
-		}//close else
-	}//close function search and print
-	
-	
+
+
 }//close class word query

@@ -21,7 +21,6 @@ public class BM25Token {
 	//ATTRIBUTES
 	private String term;
 	private ArrayList<BM25Posting> posting = new ArrayList<BM25Posting>();
-	private int docFrequency = 0;
 
 	//CONSTRUCTORS
 	public BM25Token(){}
@@ -31,6 +30,22 @@ public class BM25Token {
 	}//close constructor
 
 	//SERVICE METHODS
+	public boolean equals(BM25Token in){
+		boolean out;
+		if (this.term.equals(in.getTerm()))
+			out = true;
+		else
+			return false;
+		if (out && this.posting.size() == in.getPostings().size())
+			for (int i = 0 ; i < posting.size() ; i++ )
+				if (  !(this.posting.get(i).getDocID() == in.getPostings().get(i).getDocID())
+						&& !(this.posting.get(i).getFrequency() == in.getPostings().get(i).getFrequency())
+						&& !(this.posting.get(i).getRank() == in.getPostings().get(i).getRank())
+						)
+					return false;
+		return out;
+	}//close equals
+	
 	//ADD DOC ID
 	public void addPosting(int docID, String tag, int docLength){
 		//If there are already postings,see if it exists
